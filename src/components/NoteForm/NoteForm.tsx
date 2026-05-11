@@ -4,7 +4,7 @@ import { useId } from "react";
 import * as Yup from "yup";
 import { createNote } from "../../services/noteService";
 import type { NoteTag } from "../../types/note";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 interface FormValues {
@@ -39,24 +39,55 @@ export default function NoteForm({ onClose, resetSearch }: NoteFormProps) {
   const queryClient = useQueryClient();
   const fieldId = useId();
 
+  const mutation = useMutation({
+    mutationFn: createNote,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notes"],
+      });
+
+      resetSearch();
+
+      toast.success("Note created successfully!");
+
+      onClose();
+    },
+
+    onError: (error) => {
+      console.error(error);
+
+      toast.error("Failed to create note");
+    },
+  });
+
   const handleSubmit = async (
     values: FormValues,
     actions: FormikHelpers<FormValues>,
   ) => {
-    try {
-      await createNote(values);
+    await mutation.mutateAsync(values);
 
-      actions.resetForm();
-
-      resetSearch();
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-      toast.success("Note created successfully!");
-
-      onClose();
-    } catch (error) {
-      console.error(error);
-    }
+    actions.resetForm();
   };
+
+  //   const handleSubmit = async (
+  //     values: FormValues,
+  //     actions: FormikHelpers<FormValues>,
+  //   ) => {
+  //     try {
+  //       await createNote(values);
+
+  //       actions.resetForm();
+
+  //       resetSearch();
+  //       queryClient.invalidateQueries({ queryKey: ["notes"] });
+  //       toast.success("Note created successfully!");
+
+  //       onClose();
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
 
   return (
     <Formik
@@ -113,8 +144,12 @@ export default function NoteForm({ onClose, resetSearch }: NoteFormProps) {
           >
             Cancel
           </button>
-          <button type="submit" className={css.submitButton} disabled={false}>
-            Create note
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Creating..." : "Create note"}
           </button>
         </div>
       </Form>

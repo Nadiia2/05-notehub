@@ -11,6 +11,7 @@ import Modal from "../Modal/Modal";
 import SearchBox from "../SearchBox/SearchBox";
 import { useDebouncedCallback } from "use-debounce";
 import toast, { Toaster } from "react-hot-toast";
+import NoteForm from "../NoteForm/NoteForm";
 
 function App() {
   const [page, setPage] = useState(1);
@@ -76,10 +77,12 @@ function App() {
       </header>
       {data && data.notes.length > 0 && <NoteList notes={data.notes} />}
       {isOpenModal && (
-        <Modal
-          onClose={() => setIsOpenModal(false)}
-          resetSearch={resetSearch}
-        />
+        <Modal onClose={() => setIsOpenModal(false)}>
+          <NoteForm
+            onClose={() => setIsOpenModal(false)}
+            resetSearch={resetSearch}
+          />
+        </Modal>
       )}
     </div>
   );

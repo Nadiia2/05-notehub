@@ -1,15 +1,15 @@
 import css from "./Modal.module.css";
 import { createPortal } from "react-dom";
 import { useEffect } from "react";
-import NoteForm from "../NoteForm/NoteForm";
+// import NoteForm from "../NoteForm/NoteForm";
 
 interface ModalProps {
   onClose: () => void;
-  resetSearch: () => void;
-  //   children: React.ReactNode;
+  //   resetSearch: () => void;
+  children: React.ReactNode;
 }
 
-export default function Modal({ onClose, resetSearch }: ModalProps) {
+export default function Modal({ onClose, children }: ModalProps) {
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       onClose();
@@ -47,8 +47,8 @@ export default function Modal({ onClose, resetSearch }: ModalProps) {
         >
           &times;
         </button>
-        {<NoteForm onClose={onClose} resetSearch={resetSearch} />}
-        {/* {children} */}
+        {children}
+        {/* {NoteForm} */}
       </div>
     </div>,
     document.body,

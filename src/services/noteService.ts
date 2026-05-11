@@ -55,7 +55,7 @@ export const createNote = async (
 
 export const deleteNote = async (noteId: string): Promise<Note> => {
   try {
-    const response = await axios.delete(`/notes/${noteId}`, {
+    const response = await axios.delete<Note>(`/notes/${noteId}`, {
       headers: {
         Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
       },
