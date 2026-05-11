@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NoteList from "../NoteList/NoteList";
 import css from "./App.module.css";
 import {
@@ -10,6 +10,7 @@ import Pagination from "../Pagination/Pagination";
 import Modal from "../Modal/Modal";
 import SearchBox from "../SearchBox/SearchBox";
 import { useDebouncedCallback } from "use-debounce";
+import toast, { Toaster } from "react-hot-toast";
 
 function App() {
   const [page, setPage] = useState(1);
@@ -31,24 +32,36 @@ function App() {
     handleChange(value);
   };
 
-  const { data } = useQuery<FetchNotesResponse>({
-    queryKey: ["notes", keyWord, page],
-    queryFn: () => fetchNotes(keyWord, page),
-    // enabled: keyWord !== "",
-    placeholderData: keepPreviousData,
-  });
+  const { data, isLoading, isFetching, isError, isFetched } =
+    useQuery<FetchNotesResponse>({
+      queryKey: ["notes", keyWord, page],
+      queryFn: () => fetchNotes(keyWord, page),
+      // enabled: keyWord !== "",
+      placeholderData: keepPreviousData,
+    });
+
+  const resetSearch = () => {
+    setKeyWord("");
+    setInputValue("");
+    setPage(1);
+  };
+
+  useEffect(() => {
+    if (isFetched && data?.notes?.length === 0) {
+      toast.error("No notes found for your request.", {
+        duration: 1500,
+      });
+    }
+  }, [data, keyWord, isFetched]);
 
   return (
     <div className={css.app}>
+      <Toaster position="top-center" reverseOrder={false} />
       <header className={css.toolbar}>
         {<SearchBox onChange={handleInputChange} value={inputValue} />}
-        {/* <SearchBox
-          value={keyWord}
-          onChange={() => {
-            handleChange(keyWord);
-          }}
-        /> */}
-        {data?.totalPages && data?.totalPages > 1 && (
+        {isFetching || isLoading ? <p>Loading...</p> : null}
+        {isError && <p>There was an error, please try again.</p>}
+        {data && data.totalPages > 1 && (
           <Pagination
             totalPages={data.totalPages}
             currentPage={page}
@@ -61,8 +74,13 @@ function App() {
           </button>
         }
       </header>
-      {data?.notes && data?.notes.length > 0 && <NoteList notes={data.notes} />}
-      {isOpenModal && <Modal onClose={() => setIsOpenModal(false)} />}
+      {data && data.notes.length > 0 && <NoteList notes={data.notes} />}
+      {isOpenModal && (
+        <Modal
+          onClose={() => setIsOpenModal(false)}
+          resetSearch={resetSearch}
+        />
+      )}
     </div>
   );
 }

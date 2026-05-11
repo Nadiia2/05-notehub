@@ -5,10 +5,11 @@ import NoteForm from "../NoteForm/NoteForm";
 
 interface ModalProps {
   onClose: () => void;
+  resetSearch: () => void;
   //   children: React.ReactNode;
 }
 
-export default function Modal({ onClose }: ModalProps) {
+export default function Modal({ onClose, resetSearch }: ModalProps) {
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       onClose();
@@ -46,7 +47,7 @@ export default function Modal({ onClose }: ModalProps) {
         >
           &times;
         </button>
-        {<NoteForm onClose={onClose} />}
+        {<NoteForm onClose={onClose} resetSearch={resetSearch} />}
         {/* {children} */}
       </div>
     </div>,

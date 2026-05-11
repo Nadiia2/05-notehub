@@ -9,8 +9,18 @@ interface SearchBoxProps {
 
 export default function SearchBox({ onChange, value }: SearchBoxProps) {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(event.target.value);
+    try {
+      onChange(event.target.value);
+    } catch (error) {
+      console.error("Submit error:", error);
+    }
   };
+  // try {
+  //   onChange(event.target.value);
+  // } catch (error) {
+  //   console.error("Submit error:", error);
+  //   }
+
   return (
     <input
       className={css.input}

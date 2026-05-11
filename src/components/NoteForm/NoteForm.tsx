@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import { createNote } from "../../services/noteService";
 import type { NoteTag } from "../../types/note";
 import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 interface FormValues {
   title: string;
@@ -20,6 +21,7 @@ const initialValues: FormValues = {
 
 interface NoteFormProps {
   onClose: () => void;
+  resetSearch: () => void;
 }
 
 const OrderFormSchema = Yup.object().shape({
@@ -33,7 +35,7 @@ const OrderFormSchema = Yup.object().shape({
     .required("Tag is required"),
 });
 
-export default function NoteForm({ onClose }: NoteFormProps) {
+export default function NoteForm({ onClose, resetSearch }: NoteFormProps) {
   const queryClient = useQueryClient();
   const fieldId = useId();
 
@@ -46,8 +48,11 @@ export default function NoteForm({ onClose }: NoteFormProps) {
 
       actions.resetForm();
 
-      onClose();
+      resetSearch();
       queryClient.invalidateQueries({ queryKey: ["notes"] });
+      toast.success("Note created successfully!");
+
+      onClose();
     } catch (error) {
       console.error(error);
     }
