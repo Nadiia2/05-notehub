@@ -15,7 +15,7 @@ export const fetchNotes = async (
 ): Promise<FetchNotesResponse> => {
   try {
     const url = keyWord.trim()
-      ? `/notes/search?query=${keyWord}&page=${page}&perPage=12`
+      ? `/notes?search=${keyWord}&page=${page}&perPage=12`
       : `/notes?page=${page}&perPage=12`;
 
     const response = await axios.get<FetchNotesResponse>(url, {

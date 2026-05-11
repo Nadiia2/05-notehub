@@ -4,7 +4,7 @@ import css from "./SearchBox.module.css";
 
 interface SearchBoxProps {
   onChange: (value: string) => void;
-  value?: string;
+  value: string;
 }
 
 export default function SearchBox({ onChange, value }: SearchBoxProps) {

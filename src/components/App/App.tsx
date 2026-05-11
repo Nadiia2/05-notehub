@@ -12,11 +12,24 @@ import SearchBox from "../SearchBox/SearchBox";
 import { useDebouncedCallback } from "use-debounce";
 
 function App() {
-  const [keyWord, setKeyWord] = useState("");
   const [page, setPage] = useState(1);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [keyWord, setKeyWord] = useState("");
   // const [searchRequest, setSearchRequest] = useState("");
   // const [debouncedSearchRequest] = useDebounce(keyWord, 500);
+  const handleChange = useDebouncedCallback((value: string) => {
+    setKeyWord(value);
+    setPage(1);
+  }, 500);
+
+  // const handleChange = useDebouncedCallback(setKeyWord, 500);
+  // setPage(1);
+
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    handleChange(value);
+  };
 
   const { data } = useQuery<FetchNotesResponse>({
     queryKey: ["notes", keyWord, page],
@@ -25,15 +38,16 @@ function App() {
     placeholderData: keepPreviousData,
   });
 
-  const handleChange = useDebouncedCallback((value: string) => {
-    setKeyWord(value);
-    setPage(1);
-  }, 500);
-
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        {<SearchBox onChange={handleChange} value={keyWord} />}
+        {<SearchBox onChange={handleInputChange} value={inputValue} />}
+        {/* <SearchBox
+          value={keyWord}
+          onChange={() => {
+            handleChange(keyWord);
+          }}
+        /> */}
         {data?.totalPages && data?.totalPages > 1 && (
           <Pagination
             totalPages={data.totalPages}
